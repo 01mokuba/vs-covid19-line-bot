@@ -1,3 +1,4 @@
+// Checking whether git and clasp are working correctly
 const COVID_19 = 'https://vscovid19.code4japan.org/';
 
 const CHANNEL_ACCESS_TOKEN = PropertiesService.getScriptProperties().getProperty("CHANNEL_ACCESS_TOKEN");
