@@ -1,0 +1,11 @@
+{
+  "name": "vs-covid19-notifications",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:yokinist/vs-covid19-notifications.git",
+  "author": "yokinist <yokinist@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@types/google-apps-script": "^1.0.11"
+  }
+}
