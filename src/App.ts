@@ -83,7 +83,7 @@ function replyAboutHowToUseSearch(replyToken) {
 }
 
 function replyFormUrl(replyToken) {
-  const messages = [`以下のURLからご感想・ご意見をお寄せください！開発の参考にさせていただきます`,`https://forms.gle/GffWz4bJwDPHaGMTA`];
+  const messages = [`以下のURLからご感想・ご意見をお寄せください！開発の参考にさせていただきます！`,`https://forms.gle/GffWz4bJwDPHaGMTA`];
   fetchLineEndpointReply(replyToken, messages);
 }
 
