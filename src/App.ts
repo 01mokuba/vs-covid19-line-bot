@@ -114,27 +114,20 @@ function fetchLineEndpointReply(replyToken, messages) {
 }
 
 function addMessages(results, resultsCount, messages) {
-  let limit = 3;
+  const limit = resultsCount > 2 ? 3 : resultsCount;
   switch (resultsCount) {
     case 0:
       break;
     case 1:
     case 2:
-      limit = resultsCount;
-      formatMessages(results, resultsCount, messages, limit);
-      break;
     default:
-      limit = 3;
-      formatMessages(results, resultsCount, messages, limit);
+      formatMessages(results, messages, limit);
       break;
   }
 }
 
-function formatMessages(results, resultsCount, messages, limit) {
+function formatMessages(results, messages, limit) {
   for (let i = 0; i < limit; i++) {
-    results[i]["startDate"] = dateToString(results[i]["startDate"]);
-    results[i]["endDate"] = dateToString(results[i]["endDate"]);
-    results[i]["releaseDate"] = dateToString(results[i]["releaseDate"]);
     let message = `【${results[i]["serviceName"]}】` + `\n` + `${results[i]["url"]}` + `\n\n●提供：` + `${results[i]["orgName"]}` + `\n●費用：` + `${results[i]["price"]}` + `\n●提供期間：` + `${results[i]["startDate"]}〜${results[i]["endDate"]} ${results[i]["dateNotes"]}` + `\n●詳細：\n` + `${results[i]["details"]}` + `\n●情報元：` + `${results[i]["source"]}` + `\n●発表：` + `(${results[i]["releaseDate"]})`;
     messages.push(message);
   }
@@ -148,27 +141,6 @@ function searchSupports(word: string): Support[] {
       support['企業等'].includes(word),
   );
   return filteredByWordSupports
-}
-
-function dateToString(date) {
-  let dateString = date;
-  if (typeof dateString === "object") {
-    dateString = Utilities.formatDate(date,"JST","yyyy/MM/dd");
-  }
-  return dateString;
-}
-
-function multicast() {
-  let results = supports;
-  let resultsCount = results.length;
-  if (resultsCount !== 0) {
-    let messages = [`昨日と今日は${resultsCount}件の新着情報がありました`];
-    addMessages(results, resultsCount, messages);
-    if (resultsCount > 3) {
-      messages.push(`続きはこちらから！\n${COVID_19}`);
-    }
-    fetchLineEndpointMulticast(messages)
-  }
 }
 
 function fetchLineEndpointMulticast(messages) {
