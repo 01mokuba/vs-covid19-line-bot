@@ -46,7 +46,7 @@ const SHEET2_DATA = SHEET2.getDataRange().getValues();
 let sheet2DataArray = [];
 for (let i = 0; i < SHEET2_DATA.length; i++) {
   sheet2DataArray.push(SHEET2_DATA[i][0]);
-} 
+}
 
 const SHEET2_DATA_ARRAY = sheet2DataArray;
 
@@ -78,7 +78,7 @@ function doPost(e) {
           break;
       }
     default:
-      break;      
+      break;
   }
 }
 
@@ -113,30 +113,30 @@ function replyAboutHowToUseSearch(replyToken) {
 }
 
 function replyTodayData(replyToken) {
-  let results = getTodayData();
-  let resultsCount = results.length;
+  const results = getTodayData();
+  const resultsCount = results.length;
   if (resultsCount !== 0) {
-    let messages = [`昨日と今日は${resultsCount}件の新着情報がありました`];
+    const messages = [`昨日と今日は${resultsCount}件の新着情報がありました`];
     addMessages(results, resultsCount, messages);
     if (resultsCount > 3) {
       messages.push(`続きはこちらから！\n${COVID_19}`);
     }
     fetchLineEndpointReply(replyToken, messages);
   } else {
-    let messages = [`昨日と今日は新着情報がありません`];
+    const messages = [`昨日と今日は新着情報がありません`];
     fetchLineEndpointReply(replyToken, messages);
   }
 }
 
 function replyFormUrl(replyToken) {
-  let messages = [`以下のURLからご感想・ご意見をお寄せください！開発の参考にさせていただきます`,`https://forms.gle/GffWz4bJwDPHaGMTA`];
+  const messages = [`以下のURLからご感想・ご意見をお寄せください！開発の参考にさせていただきます`,`https://forms.gle/GffWz4bJwDPHaGMTA`];
   fetchLineEndpointReply(replyToken, messages);
 }
 
 function replyMessages(replyToken, postMessage) {
-  let results = getData(postMessage);
-  let resultsCount = results.length;
-  let messages = [`${resultsCount}件がヒットしました`];
+  const results = getData(postMessage);
+  const resultsCount = results.length;
+  const messages = [`${resultsCount}件がヒットしました`];
   addMessages(results, resultsCount, messages);
   if (resultsCount > 3) {
     messages.push(`続きはこちらから！\n${COVID_19}` + "#" + `${postMessage}`);
@@ -145,7 +145,7 @@ function replyMessages(replyToken, postMessage) {
 }
 
 function fetchLineEndpointReply(replyToken, messages) {
-  replyMessages = messages.map(m => ({'type': 'text', 'text': m}));
+  const replyMessages = messages.map(m => ({'type': 'text', 'text': m}));
   UrlFetchApp.fetch(LINE_ENDPOINT_REPLY, {
     'method': 'post',
     'headers': {
@@ -160,7 +160,7 @@ function fetchLineEndpointReply(replyToken, messages) {
 }
 
 function addMessages(results, resultsCount, messages) {
-  let limit = "";
+  let limit = 3;
   switch (resultsCount) {
     case 0:
       break;
@@ -227,14 +227,14 @@ function getTodayData() {
       let addDate = dateToString(SHEET1_DATA_ARRAY_OF_DICTS[i]["addDate"]);
       if (addDate == todayDate || addDate == yesterdayDate) {
         results.push(SHEET1_DATA_ARRAY_OF_DICTS[i]);
-      }      
+      }
     }
   }
   return results;
 }
 
 function fetchLineEndpointMulticast(messages) {
-  multicastMessages = messages.map(m => ({'type': 'text', 'text': m}));
+  const multicastMessages = messages.map(m => ({'type': 'text', 'text': m}));
   UrlFetchApp.fetch(LINE_ENDPOINT_MULTICAST, {
     'method': 'post',
     'headers': {
