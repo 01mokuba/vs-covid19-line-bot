@@ -1,14 +1,16 @@
 import { Support } from './typings'
+import {
+  LINE_ENDPOINT_MULTICAST,
+  LINE_ENDPOINT_REPLY,
+  SUPPORT_DETAIL_URL,
+  SUPPORT_API_URL
+} from './constants'
 // Checking whether git and clasp are working correctly
-const COVID_19 = 'https://vscovid19.code4japan.org/';
 
 const CHANNEL_ACCESS_TOKEN = PropertiesService.getScriptProperties().getProperty("CHANNEL_ACCESS_TOKEN");
-const LINE_ENDPOINT_REPLY = 'https://api.line.me/v2/bot/message/reply';
-const LINE_ENDPOINT_MULTICAST = 'https://api.line.me/v2/bot/message/multicast';
-const API_URL = "https://app.sabae.cc/api/googlespreadsheet.json?key=2PACX-1vSFMNp5HcRNOF5MrAujEUWR1dIoX2mncMEWTbPlVAaJqKWiq831-6gnCyI7n_G8YfPqNQXrfwyVjyHL&fbclid=IwAR1COPWKIjz5rH-nHD4Raned5-_tIxRCcDpFIfTplxqkGbjkh5ifKjOopOI"
 
 // support data
-const res = UrlFetchApp.fetch(API_URL);
+const res = UrlFetchApp.fetch(SUPPORT_API_URL);
 const supports: Support[] = JSON.parse(res.getContentText());
 // user data
 const SHEET2_ID = PropertiesService.getScriptProperties().getProperty("SHEET2_ID");
@@ -73,7 +75,7 @@ function unfollow(e){
 }
 
 function replyAboutVSCovid19(replyToken) {
-  let messages = [`VS COVID-19は、新型コロナウイルス感染症に対応した支援をまとめたサイトです。政府から公表されたデータを使用しています。詳しくはこちら↓`,`●VS COVID-19`,`${COVID_19}`,`●政府のプレスリリース`,`https://www.soumu.go.jp/menu_news/s-news/01ryutsu02_02000267.html`];
+  let messages = [`VS COVID-19は、新型コロナウイルス感染症に対応した支援をまとめたサイトです。政府から公表されたデータを使用しています。詳しくはこちら↓`,`●VS COVID-19`,`${SUPPORT_DETAIL_URL}`,`●政府のプレスリリース`,`https://www.soumu.go.jp/menu_news/s-news/01ryutsu02_02000267.html`];
   fetchLineEndpointReply(replyToken, messages);
 }
 
@@ -93,7 +95,7 @@ function replyMessages(replyToken, postMessage) {
   const messages = [`${resultsCount}件がヒットしました`];
   addMessages(results, resultsCount, messages);
   if (resultsCount > 3) {
-    messages.push(`続きはこちらから！\n${COVID_19}` + "#" + `${postMessage}`);
+    messages.push(`続きはこちらから！\n${SUPPORT_DETAIL_URL}` + "#" + `${postMessage}`);
   }
   fetchLineEndpointReply(replyToken, messages);
 }
@@ -151,7 +153,7 @@ function multicast() {
     let messages = [`昨日と今日は${resultsCount}件の新着情報がありました`];
     addMessages(results, resultsCount, messages);
     if (resultsCount > 3) {
-      messages.push(`続きはこちらから！\n${COVID_19}`);
+      messages.push(`続きはこちらから！\n${SUPPORT_DETAIL_URL}`);
     }
     fetchLineEndpointMulticast(messages)
   }
