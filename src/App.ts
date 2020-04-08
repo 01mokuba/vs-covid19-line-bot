@@ -4,14 +4,19 @@ import {
   Subsidy
 } from './typings'
 
-import {
-  LINE_ENDPOINT_MULTICAST,
-  LINE_ENDPOINT_REPLY,
-  SUPPORT_DETAIL_URL,
-  SUPPORT_API_URL,
-  SUBSIDY_API_URL,
-  SUBSIDY_DETAIL_URL
-} from './constants'
+const LINE_ENDPOINT_REPLY = 'https://api.line.me/v2/bot/message/reply';
+const LINE_ENDPOINT_MULTICAST = 'https://api.line.me/v2/bot/message/multicast';
+
+// 支援情報 from 民間
+const SUPPORT_DETAIL_URL = 'https://vscovid19.code4japan.org/';
+const SUPPORT_API_URL = "https://app.sabae.cc/api/googlespreadsheet.json?key=2PACX-1vSFMNp5HcRNOF5MrAujEUWR1dIoX2mncMEWTbPlVAaJqKWiq831-6gnCyI7n_G8YfPqNQXrfwyVjyHL&fbclid=IwAR1COPWKIjz5rH-nHD4Raned5-_tIxRCcDpFIfTplxqkGbjkh5ifKjOopOI"
+
+// 支援情報 from 行政
+const SUBSIDY_API_URL =
+  'https://jirei-seido-api.mirasapo-plus.go.jp/supports?keywords=%E6%96%B0%E5%9E%8B%E3%82%B3%E3%83%AD%E3%83%8A%E3%82%A6%E3%82%A4%E3%83%AB%E3%82%B9%E6%84%9F%E6%9F%93%E7%97%87%E9%96%A2%E9%80%A3';
+const SUBSIDY_DETAIL_URL =
+  'https://seido-navi.mirasapo-plus.go.jp/supports?keywords=%E6%96%B0%E5%9E%8B%E3%82%B3%E3%83%AD%E3%83%8A%E3%82%A6%E3%82%A4%E3%83%AB%E3%82%B9';
+
 // Checking whether git and clasp are working correctly
 
 const CHANNEL_ACCESS_TOKEN = PropertiesService.getScriptProperties().getProperty("CHANNEL_ACCESS_TOKEN");
@@ -97,61 +102,30 @@ const replyFormUrl = (replyToken) => {
   fetchLineEndpointReply(replyToken, messages);
 }
 
-const  replyMessages = (replyToken, postMessage) => {
+const replyMessages = (replyToken, postMessage) => {
+  // 民間支援情報
   const results = searchSupports(postMessage);
-  const resultsCount = results.length;
-  const messages = [`${resultsCount}件がヒットしました`];
-  addMessages(results, resultsCount, messages);
+  const resultsCount = results?.length;
+  const messages = [`民間支援情報: ${resultsCount}件がヒットしました`];
+  // const limit = resultsCount > 2 ? 3 : resultsCount;
+  // if (resultsCount !== 0) {
+  //   formatMessages(results, messages, limit);
+  // }
   if (resultsCount > 3) {
     messages.push(`続きはこちらから！\n${SUPPORT_DETAIL_URL}` + "#" + `${postMessage}`);
   }
-  fetchLineEndpointReply(replyToken, messages);
-}
-
-const fetchLineEndpointReply = (replyToken, messages) => {
-  const replyMessages = messages.map(m => ({'type': 'text', 'text': m}));
-  UrlFetchApp.fetch(LINE_ENDPOINT_REPLY, {
-    'method': 'post',
-    'headers': {
-      'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + CHANNEL_ACCESS_TOKEN,
-    },
-    'payload': JSON.stringify({
-      'replyToken': replyToken,
-      'messages': replyMessages
-    })
-  });
-}
-
-const addMessages = (results, resultsCount, messages) => {
-  const limit = resultsCount > 2 ? 3 : resultsCount;
-  switch (resultsCount) {
-    case 0:
-      break;
-    case 1:
-    case 2:
-    default:
-      formatMessages(results, messages, limit);
-      break;
+  // 行政支援情報
+  const subsidyResult = searchSubsidy(postMessage);
+  const subsidyCount = subsidyResult?.total;
+  messages.push(`行政支援情報: ${subsidyCount}件がヒットしました`);
+  // const subsidyLimit = subsidyCount > 2 ? 3 : subsidyCount;
+  // if (subsidyCount !== 0) {
+  //   formatMessages(subsidyResult, messages, subsidyLimit);
+  // }
+  if (subsidyCount > 3) {
+    messages.push(`続きはこちらから！\n${SUBSIDY_DETAIL_URL},${postMessage}`);
   }
-}
-
-const formatMessages = (results, messages, limit) => {
-  results?.some((result, i) => {
-    if (i < limit) {
-      let message =
-        `【${result["サービス名称"]}】` + `\n` +
-        `${result["URL"]}` + `\n\n
-        ●提供：` + `${result["企業等"]}` + `\n
-        ●費用：` + `${result["無料/有料"]}` + `\n
-        ●提供期間：` + `${result["開始日"]}〜${result["終了日"]} ${result["期間備考"]}` + `\n
-        ●詳細：\n` +
-        `${result["詳細"]}` + `\n
-        ●情報元：` + `${result["情報源"]}` + `\n
-        ●発表：` + `(${result["発表日付"]})`;
-      messages.push(message);
-    }
-  })
+  fetchLineEndpointReply(replyToken, messages);
 }
 
 const searchSupports = (word: string): Support[] => {
@@ -165,32 +139,57 @@ const searchSupports = (word: string): Support[] => {
 }
 
 const searchSubsidy = (word: string): SubsidyData => {
-  const res = UrlFetchApp.fetch(`${SUBSIDY_DETAIL_URL},${word}`);
+  const res = UrlFetchApp.fetch(`${SUBSIDY_API_URL},${word}`);
   const result: SubsidyData = JSON.parse(res.getContentText());
   return result;
 }
 
-const replySubsidyMessages = (replyToken, postMessage): void => {
-  const results = searchSubsidy(postMessage);
-  const messages = [`${results.total}件がヒットしました`];
-  addMessages(results.items, results.total, messages);
-  if (results.total > 3) {
-    messages.push(`続きはこちらから！\n${SUBSIDY_DETAIL_URL},${postMessage}`);
-  }
-  fetchLineEndpointReply(replyToken, messages);
+const formatMessages = (results, messages, limit) => {
+  results?.some((result, i) => {
+    console.log(result, i);
+    if (i < limit) {
+      // サービス名称あれば民間の支援情報としてフォーマット
+      const message = result['サービス名称'] ? (
+        `【${result["サービス名称"]}】\n` +
+        `${result["URL"]}\n\n` +
+        `●提供：${result["企業等"]}\n` +
+        `●費用：${result["無料/有料"]}\n` +
+        `●提供期間：${result["開始日"]}〜${result["終了日"]} ${result["期間備考"]}\n` +
+        `●詳細：\n` +
+        `${result["詳細"]}\n` +
+        `●情報元：${result["情報源"]}\n` +
+        `●発表：(${result["発表日付"]})`
+      ) : (
+        // なければ行政からの支援情報としてフォーマット
+        `【${(result as Subsidy).title}】\n` +
+        `${(result as Subsidy).refernece}\n\n` +
+        `●提供：${(result as Subsidy).support_organization}\n` +
+        `●対象：${(result as Subsidy).target}\n` +
+        `●提供期間：${(result as Subsidy).reception_start_date}〜\n` +
+        `●詳細：\n` +
+        `${(result as Subsidy).summary}\n` +
+        `●最終更新日：(${(result as Subsidy).update_info.last_modified_at})`
+      );
+      messages.push(message);
+    }
+  })
 }
 
-const multicast = () => {
-  const results = supports;
-  const resultsCount = results.length;
-  if (resultsCount !== 0) {
-    const messages = [`昨日と今日は${resultsCount}件の新着情報がありました`];
-    addMessages(results, resultsCount, messages);
-    if (resultsCount > 3) {
-      messages.push(`続きはこちらから！\n${SUPPORT_DETAIL_URL}`);
-    }
-    fetchLineEndpointMulticast(messages)
-  }
+const fetchLineEndpointReply = (replyToken, messages) => {
+  console.log('=====messages===');
+  console.log(messages);
+  const replyMessages = messages?.map(m => ({'type': 'text', 'text': m}));
+  UrlFetchApp.fetch(LINE_ENDPOINT_REPLY, {
+    'method': 'post',
+    'headers': {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + CHANNEL_ACCESS_TOKEN,
+    },
+    'payload': JSON.stringify({
+      'replyToken': replyToken,
+      'messages': replyMessages
+    })
+  });
 }
 
 const fetchLineEndpointMulticast = (messages: string[]) => {
