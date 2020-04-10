@@ -134,7 +134,7 @@ const replyMessages = (replyToken: string, postMessage?: string | null) => {
   const returnSubsidyResults = subsidyCount > 0 && subsidyResult.items.slice(0, subsidyLimit)
   // 表示系
   const formattedMessages = formatMessages(returnSupportResults, returnSubsidyResults);
-  formattedMessages?.length > 0 && messages.concat(formattedMessages);
+  formattedMessages?.length > 0 && Array.prototype.push.apply(messages, formattedMessages);
   if (resultsCount > 2) {
     messages.push(`民間支援情報: 続きはこちらから！\n${SUPPORT_DETAIL_URL}#${postMessage}`);
   }
