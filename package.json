@@ -6,7 +6,8 @@
   "author": "yokinist <yokinist@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "clasp": "node_modules/.bin/clasp"
+    "clasp": "node_modules/.bin/clasp",
+    "clasp:deploy": "yarn clasp push && yarn clasp deploy"
   },
   "dependencies": {},
   "devDependencies": {
