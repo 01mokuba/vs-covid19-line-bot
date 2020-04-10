@@ -88,7 +88,15 @@ const unfollow = (e) => {
 }
 
 const replyAboutVSCovid19 = (replyToken: string) => {
-  const messages = [`VS COVID-19は、新型コロナウイルス感染症に対応した支援をまとめたサイトです。政府から公表されたデータを使用しています。詳しくはこちら↓`,`●VS COVID-19`,`${SUPPORT_DETAIL_URL}`,`●政府のプレスリリース`,`https://www.soumu.go.jp/menu_news/s-news/01ryutsu02_02000267.html`];
+  const messages = [
+    'VS COVID-19は、新型コロナウイルス感染症に対応した支援をまとめたサイトです。政府から公表されたデータを使用しています。詳しくはこちら↓',
+    '●政府のプレスリリース(企業による無償等支援に関する情報について)',
+    'https://www.soumu.go.jp/menu_news/s-news/01ryutsu02_02000267.html',
+    '●政府のプレスリリース(事業者向け政府支援制度情報について)',
+    'https://www.soumu.go.jp/menu_news/s-news/01ryutsu06_02000243.html',
+
+  ]
+    ;
   fetchLineEndpointReply(replyToken, messages);
 }
 
