@@ -21,15 +21,13 @@ $ yarn clasp login
 ```
 `.clasp.json` をもらう(ワークフロー整備中)
 
-### GASを更新させるとき
+### LINE Botへの反映
 ```
-$ yarn clasp push
-```
+// GASに変更を反映させバージョンアップ
+$ yarn clasp:deploy "{CHANGE_MESSAGE}"
 
-### LINE botへの反映
-```
-$ yarn clasp deploy
+// ブラウザが開くのでBotに紐付いているWebAppのバージョン指定をする
 $ yarn clasp open
 ```
 - `公開 -> ウェブアプリケーションとして導入 -> Project versionを指定 -> 更新`
-- ※ Who has access to the app: Anyone, even anonymous-
+- ※ Who has access to the app: Anyone, even anonymous
