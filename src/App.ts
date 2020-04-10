@@ -164,7 +164,7 @@ const formatMessages = (
   supports: Support[],
   subsidies: Subsidy[]
 ): string[] => {
-    const formattedSupports = supports?.length > 0 ? supports.map(
+    const formattedSupports = (supports?.length > 0) ? supports.map(
       (result: Support) =>  {
         return `【${result?.['サービス名称']}】\n` +
         `${result?.URL}\n\n` +
@@ -179,7 +179,7 @@ const formatMessages = (
         `●発表：(${result?.['発表日付']})`;;
       }
     ) : [];
-    const formattedSubsidies = subsidies?.length > 0 ? subsidies.map(
+    const formattedSubsidies = (subsidies?.length > 0) ? subsidies.map(
       (result: Subsidy) =>  {
         return `【${result?.title}】\n` +
         `${result?.refernece}\n\n` +
