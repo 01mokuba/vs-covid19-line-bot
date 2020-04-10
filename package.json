@@ -1,8 +1,8 @@
 {
-  "name": "vs-covid19-notifications",
+  "name": "vs-covid19-line-bot",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "git@github.com:yokinist/vs-covid19-notifications.git",
+  "repository": "git@github.com:01mokuba/vs-covid19-line-bot.git",
   "author": "yokinist <yokinist@gmail.com>",
   "license": "MIT",
   "dependencies": {
