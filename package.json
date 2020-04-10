@@ -5,7 +5,13 @@
   "repository": "git@github.com:01mokuba/vs-covid19-line-bot.git",
   "author": "yokinist <yokinist@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "clasp": "node_modules/.bin/clasp"
+  },
   "dependencies": {
     "@types/google-apps-script": "^1.0.11"
+  },
+  "devDependencies": {
+    "@google/clasp": "^2.3.0"
   }
 }
