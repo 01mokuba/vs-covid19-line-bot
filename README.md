@@ -12,25 +12,24 @@
     - [データ](https://docs.google.com/spreadsheets/d/1IiHUk3D_b6e5BfqFG3ZBxQ8X-QVACdY7CeQeG6C7S1w/edit#gid=0)
 
 ## 貢献の仕方
--
-
-## 開発者向け情報
--
+- 整備中
 
 ### 環境構築の手順
--
+```
+$ yarn
+$ yarn clasp login
+```
+`.clasp.json` をもらう(ワークフロー整備中)
 
-### 本番環境/その他の判定
--
+### GASを更新させるとき
+```
+$ yarn clasp push
+```
 
-### ステージング・本番環境への反映
--
-
-### ブランチルール
--
-
-#### 基本的なブランチ
--
-
-#### システムで利用しているブランチ
--
+### LINE botへの反映
+```
+$ yarn clasp deploy
+$ yarn clasp open
+```
+- `公開 -> ウェブアプリケーションとして導入 -> Project versionを指定 -> 更新`
+- ※ Who has access to the app: Anyone, even anonymous-
