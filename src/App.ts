@@ -115,27 +115,30 @@ const replyMessages = (replyToken: string, postMessage?: string | null) => {
     const messages = ['検索ワードがみつかりません'];
     return fetchLineEndpointReply(replyToken, messages);
   }
+  let messages = [];
   // 民間支援情報
   const results = searchSupports(postMessage);
   const resultsCount = results && results?.length;
-  const messages = [`民間支援情報: ${resultsCount}件がヒットしました`];
-  const limit = resultsCount > 2 ? 3 : resultsCount;
+  (resultsCount && resultsCount > 0)
+    ? messages.push(`民間支援情報: ${resultsCount}件がヒットしました`)
+    : messages.push(`民間支援情報: 該当する支援情報がみつかりませんでした`);
+  const limit = resultsCount > 1 ? 2 : resultsCount;
   if (results && resultsCount !== 0) {
     formatMessages(results, messages, limit);
   }
   if (resultsCount > 3) {
-    messages.push(`続きはこちらから！\n${SUPPORT_DETAIL_URL}` + "#" + `${postMessage}`);
+    messages.push(`続きはこちらから！\n${SUPPORT_DETAIL_URL}#${postMessage}`);
   }
   // 行政支援情報
   const subsidyResult = searchSubsidy(postMessage);
   const subsidyCount = subsidyResult && subsidyResult?.total;
   messages.push(`行政支援情報: ${subsidyCount}件がヒットしました`);
   // #NOTE, FIXME: 配列結合するとうまく動かなくなる
-  // const subsidyLimit = subsidyCount > 2 ? 3 : subsidyCount;
-  // if (subsidyResult && subsidyCount !== 0) {
-  //   formatMessages(subsidyResult.items, messages, subsidyLimit);
-  // }
-  if (subsidyCount > 3) {
+  const subsidyLimit = subsidyCount > 1 ? 2 : subsidyCount;
+  if (subsidyResult && subsidyCount !== 0) {
+    formatMessages(subsidyResult.items, messages, subsidyLimit);
+  }
+  if (subsidyCount && subsidyCount > 0) {
     messages.push(`続きはこちらから！\n${SUBSIDY_DETAIL_URL},${postMessage}`);
   }
   fetchLineEndpointReply(replyToken, messages);
@@ -162,11 +165,11 @@ const formatMessages = (
   messages: string[],
   limit: number,
 ) => {
-  results?.some((result: Support | Subsidy, i: number) => {
-    if (i < limit) {
-      // サービス名称あれば民間の支援情報としてフォーマット
-      const message = result['サービス名称']
-      ? `【${(result as Support)['サービス名称']}】\n` +
+  const returnResults = results.slice(0, limit)
+  returnResults.forEach((result: Support | Subsidy) =>  {
+    const formatResult = result.hasOwnProperty('サービス名称')
+      ?
+        `【${(result as Support)['サービス名称']}】\n` +
         `${(result as Support).URL}\n\n` +
         `●提供：${(result as Support)['企業等']}\n` +
         `●費用：${(result as Support)['無料/有料']}\n` +
@@ -178,7 +181,6 @@ const formatMessages = (
         `●情報元：${(result as Support)['情報源']}\n` +
         `●発表：(${(result as Support)['発表日付']})`
       :
-        // なければ行政からの支援情報としてフォーマット
         `【${(result as Subsidy).title}】\n` +
         `${(result as Subsidy).refernece}\n\n` +
         `●提供：${(result as Subsidy).support_organization}\n` +
@@ -186,11 +188,9 @@ const formatMessages = (
         `●提供期間：${(result as Subsidy).reception_start_date}〜\n` +
         `●詳細：\n` +
         `${(result as Subsidy).summary}\n` +
-        `●最終更新日：(${(result as Subsidy).update_info.last_modified_at})`
-      ;
-      messages.push(message);
-    }
-  })
+        `●最終更新日：(${(result as Subsidy).update_info.last_modified_at})`;
+      messages.push(formatResult);
+    })
 }
 
 const fetchLineEndpointReply = (replyToken: string, messages: string[]) => {
